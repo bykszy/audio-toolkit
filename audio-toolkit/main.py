@@ -1,16 +1,14 @@
-# This is a sample Python script.
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.signal
+from scipy.io.wavfile import read, write
+import IPython.display as ipd
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+fs, x = read('wav-example.wav')
+t = np.arange(0, len(x))/fs
+print(len(t))
+plt.figure(figsize=(20, 7))
+plt.plot(t, x, label='Original signal')
+plt.show()
+#display(ipd.Audio(data=x, rate=fs))
+#ipd.Audio(data=x, rate=fs)
