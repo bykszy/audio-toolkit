@@ -4,6 +4,6 @@ def add_echo(fs,x, offset_in_ms):
   x1=np.copy(x)
   print(x1)
   for i in range(len(x)-offset):
-    x1[i + offset, 0] += int(x1[i, 0] * 0.4)
-    x1[i + offset, 1] += int(x1[i, 1] * 0.4)
+    for j in range(x.ndim):
+      x1[i + offset, j] += int(x1[i, j] * 0.4)
   return fs, x1
