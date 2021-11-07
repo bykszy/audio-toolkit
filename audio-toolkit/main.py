@@ -4,17 +4,27 @@ import scipy.signal
 from audiotoolkit import *
 from scipy.io.wavfile import read, write
 
-# fs, x = read('wav-example.wav')
-fs, x_talk = read('record.wav')
+
+fs, x = read('wav-example.wav')
+x_test = x/1.0
+#fs, x_talk = read('record.wav')
 fs_toilet, x_toilet = read('toilet_flush.wav')
 print(fs)
 print(fs_toilet)
-t = np.arange(0, len(x_talk)) / fs
-
-spec_aug(fs, x_talk)
+fs_resampled, x_resampled = resample(fs, x_test, fs_toilet)
+print(fs_resampled)
+#t = np.arange(0, len(x_talk)) / fs
+t = np.arange(0, len(x_test)) / fs
+#spec_aug(fs, x_talk)
+spec_aug(fs, x)
+spec_aug(fs, x_test)
+#spec_aug(fs_resampled, x_resampled)
 plt.figure(figsize=(20, 7))
-plt.plot(t, x_talk, label='Original signal')
-
+plt.plot(t, x_test, label='Original signal')
+#plt.plot(t, x_talk, label='Original signal')
+write("test1.wav", fs, x_test.astype(np.int16))
+write("test1resampled.wav", fs_resampled, x_resampled.astype(np.int16))
+"""
 fs_echo, x_echo = add_echo(fs, x_talk, 100)
 fs_reverse, x_reverse = reverse(fs, x_talk)
 fs_cut10s, x_cut10s = cut10s(fs, x_talk, 10)
@@ -40,5 +50,5 @@ write("record_echo.wav", fs_echo, x_echo.astype(np.int16))
 write("record_reverse.wav", fs_reverse, x_reverse.astype(np.int16))
 write("record_cut10s.wav", fs_cut10s, x_cut10s.astype(np.int16))
 write("record_noise.wav", fs_noise, x_noise.astype(np.int16))
-
 write("record_mixup_speech_toilet.wav", fs_mixup, x_mixup.astype(np.int16))
+"""
