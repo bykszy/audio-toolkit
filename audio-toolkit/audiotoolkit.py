@@ -5,16 +5,13 @@ import librosa
 def add_echo(fs, x, offset_in_ms, alfa=0.4):
     offset = int(fs * offset_in_ms / 1000)  # ile próbek pominąć przed dodawaniem echa
     x1 = np.copy(x)
-<<<<<<< HEAD
     print(x.shape)
     for i in range(len(x) - offset):
         for j in range(x.shape[1]):
             x1[i + offset, j] += x1[i, j] * alfa
-=======
     for i in range(len(x) - offset):
         for j in range(x.shape[1]):
             x1[i + offset, j] += int(x1[i, j] * 0.4)
->>>>>>> 6e24bfb1f27249f567e6eda5cb8079a7e313ea61
     return fs, x1
 
 
