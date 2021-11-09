@@ -18,7 +18,9 @@ x_talk = np.atleast_2d(x_talk)
 x_talk = np.array(x_talk).T
 x_toilet = np.atleast_2d(x_toilet)
 x_toilet = np.array(x_toilet).T
-mel_display(fs_x, x)
+fs_mel, x_mel = mel_display(fs_x, x)
+write("record_example_mel.wav", fs_mel, x_mel.astype(np.float32))
+
 """
 print(x_talk.shape)
 print(x.shape)

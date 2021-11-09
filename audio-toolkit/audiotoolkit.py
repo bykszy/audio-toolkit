@@ -63,21 +63,31 @@ def erase_freq(fs, x, seed=-1, f_range=100, where_to_begin=50):
     return fs, x_erased
 
 
-def mel_display(fs, x):
-    n_fft = 2048
-    hop_length = 512
-    n_mels = 128
+def mel_display(fs, x, n_fft = 2048, hop_length = 512, n_mels = 128):
     xx = np.hsplit(x, 2)  # podział na kanały
-    s = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
-    s_db = librosa.power_to_db(s, ref=np.max)
-    print(s_db.shape)
-    for i in range(s_db.shape[1]):
-        for j in range(10):
-            s_db[60+j, i] = -80
-    librosa.display.specshow(s_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
+    s1 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
+    s2 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
+    for i in range(s1.shape[1]):
+        for j in range(28):
+            s1[30 + j, i] = 0
+            s2[30 + j, i] = 0
+    s1_db = librosa.power_to_db(s1, ref=np.max)
+    s2_db = librosa.power_to_db(s2, ref=np.max)
+    #librosa.display.specshow(s1_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
+    librosa.display.specshow(s2_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
     plt.colorbar(format='%+2.0f dB')
     plt.show()
-    #return fs, x
+    ss1 = librosa.feature.inverse.mel_to_stft(s1, sr=fs, n_fft=n_fft)
+    ss2 = librosa.feature.inverse.mel_to_stft(s2, sr=fs, n_fft=n_fft)
+    y1 = librosa.griffinlim(ss1)
+    y2 = librosa.griffinlim(ss2)
+    y_done = np.concatenate((y1.reshape(-1, 1), y2.reshape(-1, 1)), axis=1)
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Spec aug widmo')
+    axs[0].plot(xx[1])
+    axs[1].plot(y1)
+    plt.show()
+    return fs, y_done
 
 
 def cut10s(fs, x, seconds=10, time_offset=-1):
