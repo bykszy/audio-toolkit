@@ -3,32 +3,56 @@ import matplotlib.pyplot as plt
 import scipy.signal
 from audiotoolkit import *
 from scipy.io.wavfile import read, write
+import librosa
 
+fs = 48000
 
-fs, x = read('wav-example.wav')
-x_test = x/1.0
-#fs, x_talk = read('record.wav')
-fs_toilet, x_toilet = read('toilet_flush.wav')
-print(fs)
-print(fs_toilet)
-fs_resampled, x_resampled = resample(fs, x_test, fs_toilet)
-print(fs_resampled)
-#t = np.arange(0, len(x_talk)) / fs
-t = np.arange(0, len(x_test)) / fs
-#spec_aug(fs, x_talk)
-spec_aug(fs, x)
-spec_aug(fs, x_test)
-#spec_aug(fs_resampled, x_resampled)
-plt.figure(figsize=(20, 7))
-plt.plot(t, x_test, label='Original signal')
-#plt.plot(t, x_talk, label='Original signal')
-write("test1.wav", fs, x_test.astype(np.int16))
-write("test1resampled.wav", fs_resampled, x_resampled.astype(np.int16))
+# fs, x = read('wav-example.wav')
+x, fs_x = librosa.load('wav-example.wav', sr=fs, mono=False)
+
+x_talk, fs_talk = librosa.load('record.wav', sr=fs, mono=False)
+x_toilet, fs_toilet = librosa.load('toilet_flush.wav', sr=fs)
+x = np.atleast_2d(x)
+x = np.array(x).T
+x_talk = np.atleast_2d(x_talk)
+x_talk = np.array(x_talk).T
+x_toilet = np.atleast_2d(x_toilet)
+x_toilet = np.array(x_toilet).T
 """
+print(x_talk.shape)
+print(x.shape)
+print(x_toilet.shape)
+print(x_toilet)
+"""
+# fs, x_talk = read('record.wav')
+
+
+# t = np.arange(0, len(x_talk)) / fs
+t1 = np.arange(0, len(x)) / fs_x
+t2 = np.arange(0, len(x_talk)) / fs_talk
+t3 = np.arange(0, len(x_toilet)) / fs_toilet
+# spec_aug(fs, x_talk)
+# spec_aug(fs_x, x)
+# spec_aug(fs_toilet, x_toilet)
+# spec_aug(fs_resampled, x_resampled)
+fig, axs = plt.subplots(3)
+fig.suptitle('startowe')
+axs[0].plot(t1, x)
+axs[1].plot(t2, x_talk)
+axs[2].plot(t3, x_toilet)
+plt.show()
+# plt.plot(t, x_talk, label='Original signal')
+write("test1.wav", fs, x.astype(np.int16))
+
+
 fs_echo, x_echo = add_echo(fs, x_talk, 100)
+
 fs_reverse, x_reverse = reverse(fs, x_talk)
+
 fs_cut10s, x_cut10s = cut10s(fs, x_talk, 10)
+
 fs_noise, x_noise = add_noise(fs, x_talk)
+
 fs_mixup, x_mixup_1, x_mixup_2, x_mixup = mixup(fs, x_talk, fs_toilet, x_toilet, 0.8)
 fig, axs = plt.subplots(3)
 fig.suptitle('1, 2, Mixup')
@@ -46,9 +70,8 @@ axs[2].plot(np.arange(0, len(x_reverse)) / fs_reverse, x_reverse)
 axs[3].plot(np.arange(0, len(x_cut10s)) / fs_cut10s, x_cut10s)
 axs[4].plot(np.arange(0, len(x_noise)) / fs_noise, x_noise)
 plt.show()
-write("record_echo.wav", fs_echo, x_echo.astype(np.int16))
-write("record_reverse.wav", fs_reverse, x_reverse.astype(np.int16))
-write("record_cut10s.wav", fs_cut10s, x_cut10s.astype(np.int16))
-write("record_noise.wav", fs_noise, x_noise.astype(np.int16))
-write("record_mixup_speech_toilet.wav", fs_mixup, x_mixup.astype(np.int16))
-"""
+write("record_echo.wav", fs_echo, x_echo.astype(np.float32))
+write("record_reverse.wav", fs_reverse, x_reverse.astype(np.float32))
+write("record_cut10s.wav", fs_cut10s, x_cut10s.astype(np.float32))
+write("record_noise.wav", fs_noise, x_noise.astype(np.float32))
+write("record_mixup_speech_toilet.wav", fs_mixup, x_mixup.astype(np.float32))
