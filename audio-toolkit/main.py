@@ -11,6 +11,10 @@ fs = 48000
 x, fs_x = librosa.load('wav-example.wav', sr=fs, mono=False)
 
 x_talk, fs_talk = librosa.load('record.wav', sr=fs, mono=False)
+<<<<<<< HEAD
+=======
+print(x_talk);
+>>>>>>> 6e24bfb1f27249f567e6eda5cb8079a7e313ea61
 x_toilet, fs_toilet = librosa.load('toilet_flush.wav', sr=fs)
 x = np.atleast_2d(x)
 x = np.array(x).T
