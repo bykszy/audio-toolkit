@@ -11,7 +11,6 @@ fs = 48000
 x, fs_x = librosa.load('wav-example.wav', sr=fs, mono=False)
 
 x_talk, fs_talk = librosa.load('record.wav', sr=fs, mono=False)
-print(x_talk);
 x_toilet, fs_toilet = librosa.load('toilet_flush.wav', sr=fs)
 x = np.atleast_2d(x)
 x = np.array(x).T
@@ -71,8 +70,8 @@ axs[2].plot(np.arange(0, len(x_reverse)) / fs_reverse, x_reverse)
 axs[3].plot(np.arange(0, len(x_cut10s)) / fs_cut10s, x_cut10s)
 axs[4].plot(np.arange(0, len(x_noise)) / fs_noise, x_noise)
 plt.show()
-write("record_echo.wav", fs_echo, x_echo.astype(np.int16))
-write("record_reverse.wav", fs_reverse, x_reverse.astype(np.int16))
-write("record_cut10s.wav", fs_cut10s, x_cut10s.astype(np.int16))
-write("record_noise.wav", fs_noise, x_noise.astype(np.int16))
-write("record_mixup_speech_toilet.wav", fs_mixup, x_mixup.astype(np.int16))
+write("record_echo.wav", fs_echo, x_echo.astype(np.float32))
+write("record_reverse.wav", fs_reverse, x_reverse.astype(np.float32))
+write("record_cut10s.wav", fs_cut10s, x_cut10s.astype(np.float32))
+write("record_noise.wav", fs_noise, x_noise.astype(np.float32))
+write("record_mixup_speech_toilet.wav", fs_mixup, x_mixup.astype(np.float32))
