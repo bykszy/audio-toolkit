@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import librosa
+import math
+
 
 def add_echo(fs, x, offset_in_ms, alfa=0.4):
     offset = int(fs * offset_in_ms / 1000)  # ile próbek pominąć przed dodawaniem echa
@@ -12,24 +14,15 @@ def add_echo(fs, x, offset_in_ms, alfa=0.4):
     return fs, x1
 
 
-def add_noise(fs, x, target_noise_db=20, mean_noise=0, seed=-1):
+def add_noise(fs, x, snr=20, mean_noise=0, seed=-1):
     if seed != -1:
         np.random.seed(seed)
 
-    x1 = np.copy(x)
-    # noise = np.random.normal(0, 1, (len(x),x.ndim))
+    rms_x = math.sqrt(np.mean(x ** 2))
+    rms_noise = math.sqrt(( rms_x ** 2) / (10 ** (snr / 10)))
+    noise = np.random.normal(mean_noise, rms_noise, x.shape)
+    y = x + noise
 
-    target_noise_watts = 10 ** (target_noise_db / 10)
-
-    noise_volts = np.random.normal(mean_noise, np.sqrt(target_noise_watts), (len(x), x.shape[1]))
-
-    #print(noise_volts)
-    # Noise up the original signal (again) and plot
-    y = x + noise_volts
-
-    # for i in range(len(x)):
-    # for j in range(x.ndim):
-    # x1[i , j] += noise[i,j]
     return fs, y
 
 
@@ -48,8 +41,8 @@ def spec_aug(fs, x):
     #  for j in range(x.shape[1]):
     #    x1[i + offset, j] += int(x1[i, j] * 0.4)
 
-
 #  return fs, x1
+
 
 def cut10s(fs, x, seconds=10, time_offset=-1):
     if seconds >= len(x) * fs:

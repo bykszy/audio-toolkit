@@ -51,7 +51,7 @@ fs_reverse, x_reverse = reverse(fs, x_talk)
 
 fs_cut10s, x_cut10s = cut10s(fs, x_talk, 10)
 
-fs_noise, x_noise = add_noise(fs, x_talk)
+fs_noise, x_noise = add_noise(fs, x_talk, 10)
 
 fs_mixup, x_mixup_1, x_mixup_2, x_mixup = mixup(fs, x_talk, fs_toilet, x_toilet, 0.8)
 fig, axs = plt.subplots(3)
@@ -70,8 +70,10 @@ axs[2].plot(np.arange(0, len(x_reverse)) / fs_reverse, x_reverse)
 axs[3].plot(np.arange(0, len(x_cut10s)) / fs_cut10s, x_cut10s)
 axs[4].plot(np.arange(0, len(x_noise)) / fs_noise, x_noise)
 plt.show()
+"""
 write("record_echo.wav", fs_echo, x_echo.astype(np.float32))
 write("record_reverse.wav", fs_reverse, x_reverse.astype(np.float32))
 write("record_cut10s.wav", fs_cut10s, x_cut10s.astype(np.float32))
 write("record_noise.wav", fs_noise, x_noise.astype(np.float32))
 write("record_mixup_speech_toilet.wav", fs_mixup, x_mixup.astype(np.float32))
+"""
