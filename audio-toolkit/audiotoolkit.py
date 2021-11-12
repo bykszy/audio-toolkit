@@ -131,13 +131,4 @@ def mixup(fs1, x1, fs2, x2, alfa):
         x3 = x1 * alfa + x2 * (1 - alfa)
     return fs1, x1, x2, x3
 
-def resample(fs1, x1, final_fs):
-    y = librosa.resample(x1, fs1, final_fs)
-    return final_fs, y
 
-
-def soxx():
-
-    transformer = pysox.Transformer()  # create transformer
-    transformer.trim(0, 15)  # trim the audio between 0 and 15 seconds
-    transformer.build('wav-example.wav', 'sox.wav')  # create the output file
