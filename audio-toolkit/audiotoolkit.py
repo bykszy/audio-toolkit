@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import librosa
 import librosa.display
 import math
+#import pysox
+
 
 
 def add_echo(fs, x, offset_in_ms, alfa=0.4):
@@ -46,8 +48,6 @@ def erase_freq(fs, x, seed=-1, f_range=100, where_to_begin=50):
         x1 = np.fft.ifft(x_fft_1)
         x2 = np.fft.ifft(x_fft_2)
         x_erased = np.concatenate((x1.real, x2.real), axis=1)
-        print("rmse: ")
-        print(np.sqrt(((x-x_erased) ** 2).mean()))
     else:
         x_fft_1 = np.fft.fft(x)
         x_fft_1_after = np.copy(x_fft_1)
@@ -63,7 +63,7 @@ def erase_freq(fs, x, seed=-1, f_range=100, where_to_begin=50):
     return fs, x_erased
 
 
-def mel_display(fs, x, n_fft = 2048, hop_length = 512, n_mels = 128):
+def specaug(fs, x, n_fft = 2048, hop_length = 512, n_mels = 128):
     xx = np.hsplit(x, 2)  # podział na kanały
     s1 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
     s2 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
@@ -134,3 +134,10 @@ def mixup(fs1, x1, fs2, x2, alfa):
 def resample(fs1, x1, final_fs):
     y = librosa.resample(x1, fs1, final_fs)
     return final_fs, y
+
+
+def soxx():
+
+    transformer = pysox.Transformer()  # create transformer
+    transformer.trim(0, 15)  # trim the audio between 0 and 15 seconds
+    transformer.build('wav-example.wav', 'sox.wav')  # create the output file
