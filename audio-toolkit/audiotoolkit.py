@@ -70,31 +70,49 @@ def erase_freq(fs, x, seed=-1, f_range=100, where_to_begin=50):
     return fs, x_erased
 
 
-def specaug(fs, x, n_fft=2048, hop_length=512, n_mels=128):
+def specaug(fs, x, percent_frequency_erase, percent_time_erase, starting_point_frequency=-1, starting_point_time=-1, n_fft=2048, hop_length=512, n_mels=128):
     xx = np.hsplit(x, 2)  # podział na kanały
     s1 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
     s2 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
-    for i in range(s1.shape[1]):
-        for j in range(28):
-            s1[30 + j, i] = 0
-            s2[30 + j, i] = 0
+    if starting_point_frequency == -1:
+        for i in range(s1.shape[1]):
+            for j in range(int((percent_frequency_erase * s1.shape[0])/100)):
+                s1[int(100/percent_frequency_erase) * j, i] = 0
+                s2[int(100/percent_frequency_erase) * j, i] = 0
+    else:
+        for i in range(s1.shape[1]):
+            for j in range(int((percent_frequency_erase * s1.shape[0])/100)):
+                s1[starting_point_frequency + j, i] = 0
+                s2[starting_point_frequency + j, i] = 0
+                
+    if starting_point_time == -1:
+        for i in range(s1.shape[0]):
+            for j in range(int((percent_time_erase * s1.shape[1])/100)):
+                s1[i, int(100/percent_time_erase) * j] = 0
+                s2[i, int(100/percent_time_erase) * j] = 0
+    else:
+        for i in range(s1.shape[0]):
+            for j in range(int((percent_time_erase * s1.shape[1])/100)):
+                s1[i, starting_point_time + j] = 0
+                s2[i, starting_point_time + j] = 0
     s1_db = librosa.power_to_db(s1, ref=np.max)
     s2_db = librosa.power_to_db(s2, ref=np.max)
     # librosa.display.specshow(s1_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
+
     librosa.display.specshow(s2_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
     plt.colorbar(format='%+2.0f dB')
     plt.show()
-    ss1 = librosa.feature.inverse.mel_to_stft(s1, sr=fs, n_fft=n_fft)
-    ss2 = librosa.feature.inverse.mel_to_stft(s2, sr=fs, n_fft=n_fft)
-    y1 = librosa.griffinlim(ss1)
-    y2 = librosa.griffinlim(ss2)
-    y_done = np.concatenate((y1.reshape(-1, 1), y2.reshape(-1, 1)), axis=1)
-    fig, axs = plt.subplots(2)
-    fig.suptitle('Spec aug widmo')
-    axs[0].plot(xx[1])
-    axs[1].plot(y1)
-    plt.show()
-    return fs, y_done
+   # ss1 = librosa.feature.inverse.mel_to_stft(s1, sr=fs, n_fft=n_fft)
+   # ss2 = librosa.feature.inverse.mel_to_stft(s2, sr=fs, n_fft=n_fft)
+   # y1 = librosa.griffinlim(ss1)
+   # y2 = librosa.griffinlim(ss2)
+   # y_done = np.concatenate((y1.reshape(-1, 1), y2.reshape(-1, 1)), axis=1)
+  #  fig, axs = plt.subplots(2)
+   # fig.suptitle('Spec aug widmo')
+    #axs[0].plot(xx[1])
+   # axs[1].plot(y1)
+   # plt.show()
+    #return fs, y_done
 
 
 def cut(fs, x, seconds=10, padding=0, time_offset=-1):  # padding = 0 uzupelnianie zerami, padding = 1

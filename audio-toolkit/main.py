@@ -20,7 +20,8 @@ x_toilet = np.atleast_2d(x_toilet)
 x_toilet = np.array(x_toilet).T
 #fs_mel, x_mel = specaug(fs_x, x)
 #write("record_example_mel.wav", fs_mel, x_mel.astype(np.float32))
-
+fs_x_spec, x_spec = specaug(fs_x, x, 10, 20, 2, -1)
+"""
 fs_cut1, x_cut1 = cut(fs, x_talk, 30, 0, 0)
 fs_cut2, x_cut2 = cut(fs, x_talk, 30, 1, 0)
 fs_cut3, x_cut3 = cut(fs, x_talk, 30, 2, 0)
@@ -35,7 +36,7 @@ axs[2].plot(t, x_cut3)
 axs[3].plot(t, add_padding(x_reverse, x_cut1.shape[0]))
 axs[4].plot(t, add_padding(time_wrap(x_talk, 50), x_cut1.shape[0]))
 plt.show()
-"""
+
 print(x_talk.shape)
 print(x.shape)
 print(x_toilet.shape)
