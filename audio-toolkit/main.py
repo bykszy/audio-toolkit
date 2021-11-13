@@ -21,6 +21,20 @@ x_toilet = np.array(x_toilet).T
 #fs_mel, x_mel = specaug(fs_x, x)
 #write("record_example_mel.wav", fs_mel, x_mel.astype(np.float32))
 
+fs_cut1, x_cut1 = cut(fs, x_talk, 30, 0, 0)
+fs_cut2, x_cut2 = cut(fs, x_talk, 30, 1, 0)
+fs_cut3, x_cut3 = cut(fs, x_talk, 30, 2, 0)
+
+fs_reverse, x_reverse = reverse(fs, x_talk)
+t = np.arange(0, len(x_cut1)) / fs_cut1
+fig, axs = plt.subplots(5)
+fig.suptitle('cut 0, cut added, cut reversed')
+axs[0].plot(t, x_cut1)
+axs[1].plot(t, x_cut2)
+axs[2].plot(t, x_cut3)
+axs[3].plot(t, add_padding(x_reverse, x_cut1.shape[0]))
+axs[4].plot(t, add_padding(time_wrap(x_talk, 50), x_cut1.shape[0]))
+plt.show()
 """
 print(x_talk.shape)
 print(x.shape)
@@ -47,7 +61,7 @@ fs_echo, x_echo = add_echo(fs, x_talk, 100)
 
 fs_reverse, x_reverse = reverse(fs, x_talk)
 
-fs_cut10s, x_cut10s = cut10s(fs, x_talk, 10)
+fs_cut, x_cut = cut(fs, x_talk, 10)
 
 fs_noise, x_noise = add_noise(fs, x_talk, 10)
 
@@ -61,16 +75,16 @@ axs[2].plot(np.arange(0, len(x_mixup)) / fs_mixup, x_mixup)
 plt.show()
 
 fig, axs = plt.subplots(5)
-fig.suptitle('1-Normal, 2-echo, 3-reverse, 4-cut10s, 5-noise')
+fig.suptitle('1-Normal, 2-echo, 3-reverse, 4-cut, 5-noise')
 axs[0].plot(np.arange(0, len(x_talk)) / fs, x_talk)
 axs[1].plot(np.arange(0, len(x_echo)) / fs_echo, x_echo)
 axs[2].plot(np.arange(0, len(x_reverse)) / fs_reverse, x_reverse)
-axs[3].plot(np.arange(0, len(x_cut10s)) / fs_cut10s, x_cut10s)
+axs[3].plot(np.arange(0, len(x_cut)) / fs_cut, x_cut)
 axs[4].plot(np.arange(0, len(x_noise)) / fs_noise, x_noise)
 plt.show()
 write("record_echo.wav", fs_echo, x_echo.astype(np.float32))
 write("record_reverse.wav", fs_reverse, x_reverse.astype(np.float32))
-write("record_cut10s.wav", fs_cut10s, x_cut10s.astype(np.float32))
+write("record_cut.wav", fs_cut, x_cut.astype(np.float32))
 write("record_noise.wav", fs_noise, x_noise.astype(np.float32))
 write("record_mixup_speech_toilet.wav", fs_mixup, x_mixup.astype(np.float32))
 """
