@@ -20,7 +20,8 @@ x_toilet = np.atleast_2d(x_toilet)
 x_toilet = np.array(x_toilet).T
 #fs_mel, x_mel = specaug(fs_x, x)
 #write("record_example_mel.wav", fs_mel, x_mel.astype(np.float32))
-fs_x_spec, x_spec = specaug(fs_x, x, 10, 20, 2, -1)
+#fs_x_spec, x_spec = specaug(fs_x, x, 0, 10, 20, 2, -1)
+specaug(fs_x, x, 0, 20, 10, -1, -1)
 """
 fs_cut1, x_cut1 = cut(fs, x_talk, 30, 0, 0)
 fs_cut2, x_cut2 = cut(fs, x_talk, 30, 1, 0)

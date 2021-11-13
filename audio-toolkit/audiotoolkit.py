@@ -70,11 +70,17 @@ def erase_freq(fs, x, seed=-1, f_range=100, where_to_begin=50):
     return fs, x_erased
 
 
-def specaug(fs, x, percent_frequency_erase, percent_time_erase, starting_point_frequency=-1, starting_point_time=-1, n_fft=2048, hop_length=512, n_mels=128):
+def specaug(fs, x, spec_or_mel, percent_frequency_erase, percent_time_erase, start_point_frequency=-1, start_point_time=-1, n_fft=2048, hop_length=512, n_mels=128):
     xx = np.hsplit(x, 2)  # podział na kanały
-    s1 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
-    s2 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
-    if starting_point_frequency == -1:
+    if spec_or_mel == 0:
+       # s1 = librosa.amplitude_to_db(np.abs(librosa.stft(xx[0].flatten())), ref=np.max)
+       # s2 = librosa.amplitude_to_db(np.abs(librosa.stft(xx[1].flatten())), ref=np.max)
+        s1 = abs(librosa.stft(xx[0].flatten()))
+        s2 = abs(librosa.stft(xx[1].flatten()))
+    else:
+        s1 = librosa.feature.melspectrogram(xx[0].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
+        s2 = librosa.feature.melspectrogram(xx[1].flatten(), sr=fs, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels)
+    if start_point_frequency == -1:
         for i in range(s1.shape[1]):
             for j in range(int((percent_frequency_erase * s1.shape[0])/100)):
                 s1[int(100/percent_frequency_erase) * j, i] = 0
@@ -82,10 +88,10 @@ def specaug(fs, x, percent_frequency_erase, percent_time_erase, starting_point_f
     else:
         for i in range(s1.shape[1]):
             for j in range(int((percent_frequency_erase * s1.shape[0])/100)):
-                s1[starting_point_frequency + j, i] = 0
-                s2[starting_point_frequency + j, i] = 0
-                
-    if starting_point_time == -1:
+                s1[start_point_frequency + j, i] = 0
+                s2[start_point_frequency + j, i] = 0
+
+    if start_point_time == -1:
         for i in range(s1.shape[0]):
             for j in range(int((percent_time_erase * s1.shape[1])/100)):
                 s1[i, int(100/percent_time_erase) * j] = 0
@@ -93,14 +99,20 @@ def specaug(fs, x, percent_frequency_erase, percent_time_erase, starting_point_f
     else:
         for i in range(s1.shape[0]):
             for j in range(int((percent_time_erase * s1.shape[1])/100)):
-                s1[i, starting_point_time + j] = 0
-                s2[i, starting_point_time + j] = 0
+                s1[i, start_point_time + j] = 0
+                s2[i, start_point_time + j] = 0
     s1_db = librosa.power_to_db(s1, ref=np.max)
     s2_db = librosa.power_to_db(s2, ref=np.max)
     # librosa.display.specshow(s1_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
+    if spec_or_mel == 0:
+        s2_db = librosa.power_to_db(s2, ref=np.max)
+        print(s2)
+        librosa.display.specshow(s2_db, sr=fs, y_axis='linear', x_axis='time')
+        plt.colorbar(format='%+2.0f dB')
+    else:
 
-    librosa.display.specshow(s2_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
-    plt.colorbar(format='%+2.0f dB')
+        librosa.display.specshow(s2_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
+        plt.colorbar(format='%+2.0f dB')
     plt.show()
    # ss1 = librosa.feature.inverse.mel_to_stft(s1, sr=fs, n_fft=n_fft)
    # ss2 = librosa.feature.inverse.mel_to_stft(s2, sr=fs, n_fft=n_fft)
@@ -185,3 +197,5 @@ def time_wrap(x1, percent):
     for i in range(x1.shape[0]):
         y[i] = x1[(i + offset) % x1.shape[0]]
     return y
+
+
