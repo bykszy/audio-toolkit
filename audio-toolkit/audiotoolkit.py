@@ -5,9 +5,6 @@ import librosa.display
 import math
 
 
-# import pysox
-
-
 def add_echo(fs, x, offset_in_ms, alfa=0.4):
     offset = int(fs * offset_in_ms / 1000)  # ile próbek pominąć przed dodawaniem echa
     x1 = np.copy(x)
@@ -70,7 +67,8 @@ def erase_freq(fs, x, seed=-1, f_range=100, where_to_begin=50):
     return fs, x_erased
 
 
-def specaug(fs, x, spec_or_mel, percent_frequency_erase, percent_time_erase, start_point_frequency=-1, start_point_time=-1, n_fft=2048, hop_length=512, n_mels=128):
+def specaug(fs, x, spec_or_mel, percent_frequency_erase, percent_time_erase, start_point_frequency=-1,
+            start_point_time=-1, n_fft=2048, hop_length=512, n_mels=128):
     xx = np.hsplit(x, 2)  # podział na kanały
     if spec_or_mel == 0:
        # s1 = librosa.amplitude_to_db(np.abs(librosa.stft(xx[0].flatten())), ref=np.max)
