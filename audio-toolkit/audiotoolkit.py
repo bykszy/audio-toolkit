@@ -105,12 +105,9 @@ def specaug(fs, x, spec_or_mel, percent_frequency_erase, percent_time_erase, sta
     s2_db = librosa.power_to_db(s2, ref=np.max)
     # librosa.display.specshow(s1_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
     if spec_or_mel == 0:
-        s2_db = librosa.power_to_db(s2, ref=np.max)
-        print(s2)
         librosa.display.specshow(s2_db, sr=fs, y_axis='linear', x_axis='time')
         plt.colorbar(format='%+2.0f dB')
     else:
-
         librosa.display.specshow(s2_db, sr=fs, hop_length=hop_length, x_axis='time', y_axis='mel')
         plt.colorbar(format='%+2.0f dB')
     plt.show()
