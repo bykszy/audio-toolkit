@@ -5,23 +5,33 @@ from audiotoolkit import *
 from scipy.io.wavfile import read, write
 import librosa
 
-fs = 48000
+
+xx, fsx = AudioClip('wav-example.wav').cut(10, 0, 0).get_x_fs()
+xx1, fsx1 = AudioClip('wav-example.wav').cut(10, 0, 0).reverse().get_x_fs()
+
+t = np.arange(0, len(xx)) / fsx
+fig, axs = plt.subplots(2)
+fig.suptitle('startowe')
+axs[0].plot(t, xx)
+axs[1].plot(t, xx1)
+plt.show()
+# fs = 48000
 
 # fs, x = read('wav-example.wav')
-x, fs_x = librosa.load('wav-example.wav', sr=fs, mono=False)
+#x, fs_x = librosa.load('wav-example.wav', sr=fs, mono=False)
 
-x_talk, fs_talk = librosa.load('record.wav', sr=fs, mono=False)
-x_toilet, fs_toilet = librosa.load('toilet_flush.wav', sr=fs)
-x = np.atleast_2d(x)
-x = np.array(x).T
-x_talk = np.atleast_2d(x_talk)
-x_talk = np.array(x_talk).T
-x_toilet = np.atleast_2d(x_toilet)
-x_toilet = np.array(x_toilet).T
+#x_talk, fs_talk = librosa.load('record.wav', sr=fs, mono=False)
+#x_toilet, fs_toilet = librosa.load('toilet_flush.wav', sr=fs)
+#x = np.atleast_2d(x)
+#x = np.array(x).T
+#x_talk = np.atleast_2d(x_talk)
+#x_talk = np.array(x_talk).T
+#x_toilet = np.atleast_2d(x_toilet)
+#x_toilet = np.array(x_toilet).T
 #fs_mel, x_mel = specaug(fs_x, x)
 #write("record_example_mel.wav", fs_mel, x_mel.astype(np.float32))
 #fs_x_spec, x_spec = specaug(fs_x, x, 0, 10, 20, 2, -1)
-specaug(fs_x, x, 0, 20, 10, -1, -1)
+#specaug(fs_x, x, 0, 20, 10, -1, -1)
 """
 fs_cut1, x_cut1 = cut(fs, x_talk, 30, 0, 0)
 fs_cut2, x_cut2 = cut(fs, x_talk, 30, 1, 0)
