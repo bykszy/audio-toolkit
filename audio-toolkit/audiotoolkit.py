@@ -5,8 +5,7 @@ import librosa.display
 import math
 import os
 from scipy.fftpack import fft, ifft
-from scipy.signal import spectrogram
-from scipy.fft import fftshift
+
 
 class AudioClip:
     def __init__(self, path=None, fs=24000):
@@ -38,7 +37,6 @@ class AudioClip:
             self.mel_spec.append([])
         self.audio = np.array(self.audio,
                               dtype=object)  ####### self.audio format -> [different song (0,1,2,3,...), data(0) or fs(1) ][data samples, channel]
-        print(self.spec)
 
     def create_spec(self):
         for a in range(len(self.audio)):
@@ -231,16 +229,25 @@ class AudioClip:
                     self.audio[a, 0][i, j] = x1[len(self.audio[a, 0]) - i - 1, j]
         return self
 
-    def mixup(self, fs1, x1, fs2, x2, alfa):
-        #  fs1, x1 = self.cut(10) #####################################
-        #  fs2, x2 = self.cut(10) #####################################
-        if x1.shape[1] == 1 or x2.shape[1] == 1:
-            x3 = np.zeros(x1.shape[0])
-            for i in range(x1.shape[0]):
-                x3[i] = x1[i, 0] * alfa + x2[i, 0] * (1 - alfa)
+    def get_mixup(self, nr1=-1, nr2=-1, alfa=0.4):
+        if len(self.audio) >= 2:
+            if nr1 == -1 or nr1 == nr2:
+                nr1 = np.randint(0, high=len(self.audio))
+            if nr2 == -1 or nr2 == nr1:
+                nr2 = np.randint(0, high=len(self.audio))
+                while nr2 == nr1:
+                    nr2 = np.randint(0, high=len(self.audio))
+            if self.audio[nr1, 0].shape[1] == 1 or self.audio[nr2, 0].shape[1] == 1:
+                x3 = np.zeros(self.audio[nr1, 0].shape[0])
+                for i in range(self.audio[nr1, 0].shape[0]):
+                    x3[i] = self.audio[nr1, 0][i, 0] * alfa + self.audio[nr2, 0][i, 0] * (1 - alfa)
+            else:
+                x3 = self.audio[nr1, 0] * alfa + self.audio[nr2, 0] * (1 - alfa)
+            return np.array([[x3, self.audio[nr1, 1]]], dtype=object)
+
         else:
-            x3 = x1 * alfa + x2 * (1 - alfa)
-        return fs1, x1, x2, x3
+            print("did nothing, only one audio was uploaded")
+            return self
 
     def add_padding(self, desired_len):
         for a in range(len(self.audio)):
