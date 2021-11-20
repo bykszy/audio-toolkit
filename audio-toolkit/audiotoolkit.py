@@ -77,10 +77,14 @@ class AudioClip:
                 for i in range(f_range):
                     c1[where_to_begin + i] = 0
                     c2[where_to_begin + i] = 0
+                    c1[self.audio[a, 0].shape[0] - where_to_begin - i] = 0
+                    c2[self.audio[a, 0].shape[0] - where_to_begin - i] = 0
                 fig, axs = plt.subplots(2)
                 fig.suptitle('erase freq widmo')
-                axs[0].plot(abs(c1[:int(d-1)]))
-                axs[1].plot(abs(c1[:int(d-1)]))
+                axs[0].plot(abs(c1))
+                axs[1].plot(abs(c2))
+                # axs[0].plot(abs(c1[:int(d-1)]))
+                # axs[1].plot(abs(c2[:int(d-1)]))
                 plt.show()
                 x1 = ifft(c1)
                 x2 = ifft(c2)

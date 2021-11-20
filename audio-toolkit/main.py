@@ -1,7 +1,7 @@
 from audiotoolkit import *
 
 xx = AudioClip().cut(10, 0, 0).add_padding(480000).get_audio()
-xx1_and_fs1 = AudioClip('wav-example.wav').cut(10, 0, 0).add_padding(480000).add_echo(100).reverse().add_noise().erase_freq(30000, 500).get_audio()
+xx1_and_fs1 = AudioClip('wav-example.wav').cut(10, 0, 0).add_padding(480000).add_echo(100).reverse().add_noise().erase_freq(240000, 100).get_audio()
 
 
 
