@@ -8,6 +8,42 @@ from scipy.fftpack import fft, ifft
 
 
 class AudioClip:
+    """
+        Loads audio from file as a floating point time series. It keeps in variables the audio series, sampling rate and spectrogram.
+        Audio will be automatically resampled to the given rate (default fs=24000).
+        To preserve the native sampling rate of the file, use fs=None.
+            Parameters
+            ----------
+            path : string
+                path to the input file.
+                If path is not given or None, it will search current project directory and load all wav files in there.
+                If given path leads to directory, it will load all wav files within this directory.
+                If given path leads to audio file, it will only load given audio file.
+
+            fs : int
+                target sampling rate
+                ‘None’ uses the native sampling rate
+
+            Data format:
+            -------
+            self.audio : np.ndarray (shape=[a,2])
+                self.audio[a,b]
+                a - amount of audio files loaded,
+                b - 0-data or 1-fs
+
+                data is stored as an np.ndarray (shape=[a,2]) [data samples, channel].
+                fs is stored as integer.
+
+            Example usage :
+                Getting audio data and
+                     for i in range(time):
+                        for j in range(2): ##number of channels
+                            self.audio[a, 0][i, j] = 0 ## clear audio
+
+                Getting sample rate:
+                    sr=self.audio[a, 1]
+
+    """
     def __init__(self, path=None, fs=24000):
         if path is None:
             self.path = str(os.path.dirname(os.path.abspath(__file__)))
@@ -36,9 +72,27 @@ class AudioClip:
             self.spec.append([])
             self.mel_spec.append([])
         self.audio = np.array(self.audio,
-                              dtype=object)  ####### self.audio format -> [different song (0,1,2,3,...), data(0) or fs(1) ][data samples, channel]
+                              dtype=object)
 
     def create_spec(self):
+        """Computes a spectrogram from previously loaded audio.
+
+            Parameters
+            ----------
+            self : Class AudioClip
+                Class AudioClip containing audio data
+
+            Returns
+           -------
+            self : Class AudioClip
+               Class AudioClip with modified self.spec
+
+            See Also
+            --------
+            class AudioClip
+                Base class that loads audio from a file.
+                AudioClip variables are written in detail in AudioClip docstring.
+        """
         for a in range(len(self.audio)):
             if self.audio[a, 0].ndim == 2:
                 s1 = abs(librosa.stft(self.audio[a, 0].T[0]))
@@ -53,18 +107,75 @@ class AudioClip:
         return self
 
     def add_echo(self, offset_in_ms, alfa=0.4):
+        """Adds echo effect to audio series.
+
+            Parameters
+            ----------
+            self : Class AudioClip
+               Class containing audio time-series needed to perform this operation
+
+            offset_in_ms : number > 0 [scalar]
+               Amount of time (in milliseconds) to wait before adding echo effect.
+
+            alfa : float > 0 [scalar]
+                Echo factor. The higher alfa is, the louder echo will be.
+                If alfa == 0, echo will not be added.
+                By default, alfa == 0.4
+
+            Returns
+            -------
+            self : Class AudioClip
+                Class AudioClip with modified self.audio[a, 0]
+
+            See Also
+            --------
+            class AudioClip
+                Base class that loads audio from a file.
+                AudioClip variables are written in detail in AudioClip docstring.
+        """
         for a in range(len(self.audio)):
             offset = int(self.audio[a, 1] * offset_in_ms / 1000)  # ile próbek pominąć przed dodawaniem echa
             for i in range(len(self.audio[a, 0]) - offset):
                 for j in range(self.audio[a, 0].shape[1]):
                     self.audio[a, 0][i + offset, j] += self.audio[a, 0][i, j] * alfa
+                    if self.audio[a, 0][i + offset, j] > 0.99:
+                        self.audio[a, 0][i + offset, j] = 0.99
+                    if self.audio[a, 0][i + offset, j] < -0.99:
+                        self.audio[a, 0][i + offset, j] = -0.99
             return self
 
     def add_noise(self, snr=20, mean_noise=0, seed=-1):
+        """Adds white noise to audio series.
+
+                  Parameters
+                  ----------
+                  self : Class AudioClip
+                       Class AudioClip containing audio data
+
+                  snr : number > 0 [dB]
+                       signal-to-noise ratio, SNR is defined as the ratio of signal power to the noise power, expressed
+                       in decibels. The higher the snr value is, the less noise is added
+
+                  mean_noise : float [scalar]
+                       Mean ("centre") of the random distribution.
+
+                  seed : int number  [scalar]
+                       Seed the generator. If not specified, seed is randomly generated.
+
+                  Returns
+                  -------
+                  self : Class AudioClip
+                        Class AudioClip with modified self.audio[a, 0]
+
+                  See Also
+                   --------
+                  class AudioClip
+                     Base class that loads audio from a file.
+                     AudioClip variables are written in detail in AudioClip docstring.
+               """
         for a in range(len(self.audio)):
             if seed != -1:
                 np.random.seed(seed)
-
             rms_x = math.sqrt(np.mean(self.audio[a, 0] ** 2))
             rms_noise = math.sqrt((rms_x ** 2) / (10 ** (snr / 10)))
             noise = np.random.normal(mean_noise, rms_noise, self.audio[a, 0].shape)
